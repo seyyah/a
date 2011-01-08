@@ -1,0 +1,4 @@
+export EDITOR=/usr/bin/vim
+export LESS=-RX
+export PAGER=/usr/bin/less
+export DH_ALWAYS_EXCLUDE=CVS:.svn:.git:.hg

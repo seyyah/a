@@ -1,0 +1,32 @@
+#!/bin/sh
+# Workaround till debian officially introduces an alternatives system.
+# http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=548917
+
+# XXX make sure to install ruby1.9.1-full before
+
+update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby1.8 400 \
+                    --slave   /usr/share/man/man1/ruby.1.gz ruby.1.gz \
+                                  /usr/share/man/man1/ruby1.8.1.gz \
+                    --slave   /usr/share/man/man1/ri.1.gz ri.1.gz \
+                                  /usr/share/man/man1/ri1.8.1.gz \
+                    --slave   /usr/share/man/man1/rdoc.1.gz rdoc.1.gz \
+                                  /usr/share/man/man1/rdoc1.8.1.gz \
+                    --slave   /usr/share/man/man1/irb.1.gz irb.1.gz \
+                                  /usr/share/man/man1/irb1.8.1.gz \
+                    --slave   /usr/bin/ri ri /usr/bin/ri1.8 \
+                    --slave   /usr/bin/irb irb /usr/bin/irb1.8 \
+                    --slave   /usr/bin/rdoc rdoc /usr/bin/rdoc1.8
+update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby1.9.1 500 \
+                    --slave   /usr/share/man/man1/ruby.1.gz ruby.1.gz \
+                                   /usr/share/man/man1/ruby1.9.1.1.gz \
+                    --slave   /usr/share/man/man1/ri.1.gz ri.1.gz \
+                                  /usr/share/man/man1/ri1.9.1.1.gz \
+                    --slave   /usr/share/man/man1/rdoc.1.gz rdoc.1.gz \
+                                  /usr/share/man/man1/rdoc1.9.1.1.gz \
+                    --slave   /usr/share/man/man1/irb.1.gz irb.1.gz \
+                                  /usr/share/man/man1/irb1.9.1.1.gz \
+                    --slave   /usr/bin/gem gem /usr/bin/gem1.9.1 \
+                    --slave   /usr/bin/rake rake /usr/bin/rake1.9.1 \
+                    --slave   /usr/bin/ri ri /usr/bin/ri1.9.1 \
+                    --slave   /usr/bin/irb irb /usr/bin/irb1.9.1 \
+                    --slave   /usr/bin/rdoc rdoc /usr/bin/rdoc1.9.1

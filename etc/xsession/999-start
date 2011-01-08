@@ -1,0 +1,40 @@
+case "$XIX_PREF_XTERMINAL" in
+[Nn][Oo][Nn][Ee])
+	XIX_PREF_XTERMINAL=
+	;;
+"")
+	for p in xterm rxvt gnome-terminal; do
+		if pathfind "$p"; then
+			XIX_PREF_XTERMINAL="$p"
+			break
+		fi
+	done
+	unset p
+	;;
+*)
+	if ! pathfind "$XIX_PREF_XTERMINAL"; then
+		XIX_PREF_XTERMINAL=
+	fi
+	;;
+esac
+
+[ -n "$XIX_PREF_XTERMINAL" ] || return 0
+
+# This might be catched by some programs, e.g. devilspie.  DO NOT USE SPACES!
+title="a"
+
+case "$XIX_PREF_XTERMINAL" in
+xterm|rxvt)
+	cmdline="$XIX_PREF_XTERMINAL -geometry 80x30 -title $title"
+	;;
+gnome-terminal)
+	cmdline="$XIX_PREF_XTERMINAL --geometry 80x30 --title $title"
+	;;
+*)
+	cmdline="$XIX_PREF_XTERMINAL"
+	;;
+esac
+
+unset title
+
+exec $cmdline -e ${SHELL:-/bin/bash} -l &

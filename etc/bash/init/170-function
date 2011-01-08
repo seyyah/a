@@ -1,0 +1,52 @@
+_u   () { cd /usr/share/$*;     }
+_ud  () { cd /usr/share/doc/$*; }
+_uch () {
+	[ -n "$1" ] || return
+	local d=/usr/share/doc
+
+	local f
+	for f in changelog.Debian.gz changelog.gz; do
+		if [ -f $d/$1/$f ]; then
+			zless $d/$1/$f
+			break
+		fi
+	done
+}
+
+_i () {
+	local sudo service
+
+	# added to sysvinit-utils in 2009
+	service="/usr/sbin/service"
+
+	if [ -x "$service" ]; then
+		case "$#" in
+		0) cmd="$service --status-all" ;;
+		1) cmd="$service $1 restart"   ;;
+		*) cmd="$service $@"           ;;
+		esac
+	else
+		# old style
+		case "$#" in
+		0) exit 1                       ;; # no sane default
+		1) cmd="/etc/init.d/$1 restart" ;;
+		*) cmd="/etc/init.d/$@"         ;;
+		esac
+	fi
+
+	sudo=sudo
+	case "$(id -u)" in
+	0) sudo= ;;
+	esac
+
+	$sudo $cmd
+}
+_services_show () {
+        local cur
+
+	COMPREPLY=()
+	cur=${COMP_WORDS[COMP_CWORD]}
+	COMPREPLY=($(compgen -W "$(for f in /etc/init.d/*; do echo $(basename $f); done)" -- $cur))
+}
+alias i='_i'
+complete -o default -F _services_show i

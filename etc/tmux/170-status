@@ -1,0 +1,29 @@
+# default statusbar colors
+set -g status-fg white
+set -g status-bg default
+set -g status-attr default
+
+# default window title colors
+set-window-option -g window-status-fg white
+set-window-option -g window-status-bg default
+set-window-option -g window-status-attr dim
+
+# active window title colors
+set-window-option -g window-status-current-fg yellow
+set-window-option -g window-status-current-bg default
+set-window-option -g window-status-current-attr bright
+
+# command/message line colors
+set -g message-fg white
+set -g message-bg black
+set -g message-attr bright
+
+# center align the window list
+set -g status-justify centre
+
+# show some useful stats but only when tmux is started
+set -g status-left "  #[fg=magenta]#(cut -d \" \" -f 1,2,3 </proc/loadavg)#[default]  "
+set -g status-left-length 50
+set -g status-right-length 50
+set -g status-right "  #[fg=cyan,bright]%a %Y-%m-%d %H:%M [#H]#[default]  "
+

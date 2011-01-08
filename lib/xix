@@ -1,0 +1,140 @@
+# Boot XIX system through shell
+# Copyright ©, 2010 roktas
+# Licensed under WTFPL http://sam.zoy.org/wtfpl/
+
+# ------------------------------------------------------------------------------
+# XIX Environment
+# ------------------------------------------------------------------------------
+if [ -z "$XIX" ]; then
+	# Release tag (also serves as a compatibility level)
+	export XIX=0.0
+
+	: ${XIX_HOME:="$HOME"}
+
+	export XIX_ETC="${XIX_HOME}/etc"
+	export XIX_LIB="${XIX_HOME}/lib"
+	export XIX_BIN="${XIX_HOME}/bin"
+	export XIX_SYSTEM="/usr/lib/19"
+	export XIX_TASKS="${XIX_LIB}/tasks"
+	export XIX_SESSION="${XIX_ETC}/xsession"
+	export XIX_CRON="${XIX_ETC}/cron"
+
+	# Development Environment
+
+	export SHLIB="${XIX_LIB}/sh:${XIX_SYSTEM}/sh"
+	export RUBYLIB="${RUBYLIB}:${XIX_LIB}/ruby:${XIX_SYSTEM}/ruby"
+	export RAKE_SYSTEM="${XIX_TASKS}"
+	export PERL5LIB="${PERL5LIB}:${XIX_LIB}/perl:${XIX_SYSTEM}/perl"
+	export PYTHONPATH="${PYTHONPATH}:${XIX_LIB}/python:${XIX_SYSTEM}/python"
+	export PHPRC="${XIX_SYSTEM}/php" # php.ini'de include_path ayarlanmalı
+
+	# Yönetici kontrolü yapmakla uğraşma.
+	case "$PATH" in */sbin:|/sbin:*|*/sbin) ;; *) PATH="/sbin:/usr/sbin:${PATH}"   ;; esac
+	case "$PATH" in */local/*) ;; *) PATH="/usr/local/sbin:/usr/local/bin:${PATH}" ;; esac
+	export PATH="${XIX_BIN}:/var/lib/gems/1.9.1/bin:/var/lib/gems/1.8/bin:${PATH}"
+fi
+
+# ------------------------------------------------------------------------------
+# Core Helpers
+# ------------------------------------------------------------------------------
+
+# this should be only once for bash
+type xix >/dev/null 2>&1 && return 0
+
+# ortam bilgisini görüntüle
+xix() {
+	echo "$XIX"
+}
+
+# taşınabilir which(1)
+pathfind() {
+	local oldifs="$IFS"; IFS=':'
+
+	local p
+	for p in $PATH; do
+		if [ -x "${p}/${*}" ] && [ -f "${p}/${*}" ]; then
+			IFS="$oldifs"
+			return 0
+		fi
+	done
+
+	IFS="$oldifs"
+
+	return 1
+}
+
+# verilen dizinde öneklenmiş dosyaları (öntanımlı tümü) ithal et
+sourcedir() {
+	local directory="$1"
+	shift 2>/dev/null ||:
+
+	local prefix f
+	for prefix in "${@:-}"; do
+		for f in "${directory}/"${prefix}*; do
+			case "${f}" in "${directory}/"${prefix}'*') break ;; esac
+			for f in "${directory}/"${prefix}*; do
+				. "${f}"
+			done
+			break
+		done
+	done
+}
+
+# verilen dizinde öneklenmiş dosyalar (öntanımlı tümü) üzerinde işlem yap
+dodir() {
+	local cmd="$1"
+	shift 2>/dev/null ||:
+
+	local directory="$1"
+	shift 2>/dev/null ||:
+
+	local prefix f
+	for prefix in "${@:-}"; do
+		for f in "${directory}/"${prefix}*; do
+			case "${f}" in "${directory}/"${prefix}'*') break ;; esac
+			for f in "${directory}/"${prefix}*; do
+				$cmd "${f}"
+			done
+			break
+		done
+	done
+}
+
+# kabuk kitaplıkları için basit ithalat
+use() {
+	local n="$1" p m
+
+	[ -n "$n" ] || return 0
+
+	local oldifs="$IFS"; IFS=':'
+	for p in ${SHLIB}; do
+		for m in "${p}/${n}.sh" "${p}/${n}"; do
+			if [ -r "$m" ]; then
+				IFS="$oldifs"
+				if [ -f "$m" ]; then
+					. "$m"
+				elif [ -d "$m" ]; then
+					sourcedir "$m"
+				fi
+				return 0
+			fi
+		done
+	done
+	IFS="$oldifs"
+
+	return 1
+}
+
+# güvenli dosyal oluştur
+safefile() {
+	local file="$1"
+	if (umask 077 && touch "$file") 2>/dev/null && [ -w "$file" ] && [ ! -L "$file" ]; then
+		chmod 600 "$file"
+	else
+		echo >&2 "'$file' dosyası oluşturulamadı"
+		exit 19
+	fi
+}
+
+# temel işlevleri alt kabuğa ihraç et (bash için)
+[ -z "$BASH" ] || export -f xix pathfind sourcedir dodir use safefile

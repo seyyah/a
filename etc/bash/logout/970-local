@@ -1,0 +1,1 @@
+[ ! -f ~/.bash_logout.local ] || . ~/.bash_logout.local

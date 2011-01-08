@@ -1,0 +1,223 @@
+#!/bin/sh -e
+
+# Recai Oktaş <roktas@debian.org>
+# This file is in public domain.
+
+PROGRAM=${0##*/}
+DEFAULT_RESOLUTION=1024x768
+DEFAULT_DISPLAYNUM=2
+DEFAULT_COMMAND=cwm
+
+run_server() {
+	local resolution="$1"
+	local displaynum="$2"
+	local command="$3"
+
+	echo >&2 "Resolution: $resolution"
+	echo >&2 "Display:    $displaynum"
+	echo >&2 "Command:    $command"
+
+	# Disable XKB extension, it (somehow) prevents using the current language layout.
+	Xephyr -ac -screen $resolution -br -reset -kb -terminate 2> /dev/null :$displaynum &
+
+	DISPLAY=:$displaynum
+	export DISPLAY
+
+	if [ "$command" ]; then
+		$command &
+	fi
+
+	# The user may have xresource configurations.
+	if [ -f ~/.Xresources ]; then
+		xrdb -merge ~/.Xresources
+	fi
+	if [ -f ~/.Xdefaults ]; then
+		xrdb -merge ~/.Xdefaults
+	fi
+}
+
+# portable which(1)
+pathfind() {
+	oldifs="$IFS"; IFS=':'
+	for _p in $PATH; do
+		if [ -x "$_p/$*" ] && [ -f "$_p/$*" ]; then
+			IFS="$oldifs"
+			return 0
+		fi
+	done
+	IFS="$oldifs"
+	return 1
+}
+
+is_displaynum_ok() {
+	if ! echo "$DISPLAY" | grep -q -- "^[^:]*:$1"; then
+		break
+	fi
+}
+
+if ! pathfind Xephyr; then
+	echo >&2 "You need Xephyr (a nested X server) to run this script!"
+	exit 1
+fi
+
+if [ ! "$DISPLAY" ]; then
+	echo >&2 "DISPLAY undefined, is X server running?"
+	exit 1
+fi
+
+while getopts d:r:nh opt; do
+	case $opt in
+	d) DISPLAYNUM="$OPTARG" ;;
+	r) RESOLUTION="$OPTARG" ;;
+	n) noask=yes ;;
+	h) cat >&2 <<- EOF
+		Usage: $PROGRAM [options] command
+		Options:
+		  -d           display number
+		  -r           resolution
+		  -n           no ask, use defaults
+
+		  -h           this screen
+	EOF
+	   exit 2 ;;
+	*) exit 1 ;;
+	esac
+done
+shift $(($OPTIND - 1))
+
+COMMAND="$1"
+
+if [ "$noask" ]; then
+	RESOLUTION="${RESOLUTION:-$DEFAULT_RESOLUTION}"
+	DISPLAYNUM="${DISPLAYNUM:-$DEFAULT_DISPLAYNUM}"
+	COMMAND="${COMMAND:-$DEFAULT_COMMAND}"
+fi
+
+# Fast path.
+if [ "$RESOLUTION" ] && [ "$DISPLAYNUM" ] && [ "$COMMAND" ]; then
+	run_server	"$RESOLUTION" "$DISPLAYNUM" "$COMMAND"
+	exit $?
+fi
+
+if pathfind zenity; then
+	ask_resolution() {
+		# FIXME: default should be selected from DEFAULT_RESOLUTION
+		zenity	--title="$PROGRAM" \
+			--text="$1" \
+			--list \
+			--column="Select" \
+			--column="Option" \
+			TRUE 1024x768 \
+			FALSE 800x600 \
+			FALSE 640x480 \
+			--radiolist
+	}
+	ask_display() {
+		zenity	--title="$PROGRAM" \
+			--text "$1" \
+			--scale \
+			--min-value=1 \
+			--max-value=100 \
+			--value=$DEFAULT_DISPLAYNUM \
+			--step 2 || return 1
+	}
+	ask_command() {
+		zenity	--title="$PROGRAM" \
+			--text "$1" \
+			--entry \
+			--entry-text "$DEFAULT_COMMAND"
+	}
+	warn() {
+		zenity	--title="$PROGRAM" \
+			--text "$1" \
+			--warning
+	}
+else
+	ask_resolution() {
+		choose_from_list	"$1" \
+					"1024x768 800x600 640x480" \
+					"$DEFAULT_RESOLUTION"
+		echo "$ANS"
+	}
+	ask_display() {
+		choose_from_list	"$1" \
+					"2 3 4 5 6 7 8 9" \
+					"$DEFAULT_DISPLAYNUM"
+		echo "$ANS"
+	}
+	ask_command() {
+		echo >&2 "$1"
+		printf >&2 "    [$DEFAULT_COMMAND]: "
+		read ANS
+		if [ ! "$ANS" ]; then
+			ANS="$DEFAULT_COMMAND"
+		elif [ "$ANS" == NONE ]; then
+			ANS=
+		fi
+		echo "$ANS"
+	}
+	warn() {
+		echo >&2 "$*"
+	}
+	# Stolen and modified from 'autoproject'.
+	choose_from_list() {
+		local query=$1
+		local choices=" $(echo $2) "
+		local default=$3
+		local finished=no
+
+		ANS=
+		while [ $finished != yes ]; do
+			echo >&2 "$1"
+			printf >&2 "    select from: $choices [$default]: "
+
+			read ANS
+			if [ "$ANS" = "" ]; then ANS="$default"; fi
+			if echo "$choices" | grep -q -- " $ANS "; then
+				finished=yes
+			else
+				echo >&2 "    unrecognized choice $ANS"
+			fi
+		done
+	}
+fi
+
+if [ ! "$RESOLUTION" ]; then
+	RESOLUTION=$(
+		ask_resolution "Please select a screen resolution."
+	) || exit 1
+fi
+
+if [ ! "$DISPLAYNUM" ]; then
+	max=10
+	while [ $max -ge 0 ]; do
+		DISPLAYNUM=$(
+			ask_display "Please pick a display number."
+		) || exit 1
+		if is_displaynum_ok "$DISPLAYNUM"; then
+			break
+		fi
+		warn "Display number $DISPLAYNUM is in use, please select a different display number!"
+		max=$(($max - 1))
+	done
+fi
+
+if [ ! "$COMMAND" ]; then
+	if ! pathfind $DEFAULT_COMMAND; then
+		COMMAND=NONE
+	fi
+
+	max=10
+	while [ $max -ge 0 ]; do
+		COMMAND=$(
+			ask_command "Please enter a command to run."
+		) || exit 1
+		if [ ! "$COMMAND" ] || pathfind "$COMMAND"; then
+			break
+		fi
+		warn "No such command $COMMAND, please enter another command!"
+		max=$(($max - 1))
+	done
+fi
+
+run_server "$RESOLUTION" "$DISPLAYNUM" "$COMMAND"

@@ -1,0 +1,8 @@
+set runtimepath+=$XIX_ETC/vim,$XIX_ETC/vim/after
+
+filetype off
+call pathogen#helptags()
+call pathogen#runtime_append_all_bundles()
+filetype indent plugin on
+syntax on
+set nocompatible

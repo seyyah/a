@@ -1,0 +1,2 @@
+# Run devilspie just before spawning a terminal.
+[ -n "$XIX_PREF_FULLSCREEN" ] && pathfind devilspie && /usr/bin/devilspie &

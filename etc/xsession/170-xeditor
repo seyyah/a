@@ -1,0 +1,21 @@
+if [ -n "$XIX_PREF_XEDITOR" ]; then
+	if ! pathfind "$XIX_PREF_XEDITOR"; then
+		echo >&2 "seçilen editör $XIX_PREF_XEDITOR kurulu değil"
+		return 0
+	fi
+
+	case "$XIX_PREF_XEDITOR" in
+	cream)
+		editor="cream -f"
+		;;
+	vim|gvim|nano|emacspico|joe)
+		editor="$XIX_PREF_XEDITOR"
+		;;
+	*)
+		echo >&2 "$XIX_PREF_XEDITOR XIX_PREF_XEDITOR için uygun olmayan bir seçim"
+		return 0
+		;;
+	esac
+
+	export EDITOR="$editor"
+fi

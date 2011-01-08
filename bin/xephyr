@@ -1,0 +1,2 @@
+#!/bin/sh
+exec Xephyr :1 -auth xephyr-xauth -reset -screen 1200x900x8 -dpi 200

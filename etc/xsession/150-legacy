@@ -1,0 +1,7 @@
+# Read the user resources database.
+dodir 'xrdb -merge' $XIX_ETC/xresources
+
+# Read the user keymaps.
+if [ -f ~/.Xmodmap ]; then
+	xmodmap ~/.Xmodmap
+fi

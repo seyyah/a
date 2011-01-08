@@ -1,0 +1,20 @@
+#!/bin/sh
+
+PROGNAME=${0##*/}
+
+if ! type xix >/dev/null 2>&1; then
+	for f in /usr/lib/19/xix $HOME/lib/xix; do
+		if [ -f "$f" ]; then
+			. "$f"
+		fi
+	done
+	unset f
+
+	if ! type xix >/dev/null 2>&1; then
+		echo >&2 "no xix environment found; aborting"
+		exit 1
+	fi
+fi
+
+safefile "$HOME/.xsession-errors"; exec >>"$file" 2>&1
+sourcedir "${XIX_XSESSION:-$XIX_ETC/xsession}"

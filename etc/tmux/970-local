@@ -1,0 +1,1 @@
+if '[ -f $HOME/.tmuxlocal.conf ]'     'source $HOME/.tmuxlocal.conf'

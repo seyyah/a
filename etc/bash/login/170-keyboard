@@ -1,0 +1,9 @@
+[ -z "$SSH_CLIENT" ] || return 0
+
+if [ -n "$DISPLAY" ]; then
+	pathfind xset && \
+		xset r rate ${XKB_DELAY:-220} ${XKB_RATE:-80}
+else
+	pathfind kbdrate && \
+		kbdrate -d ${KBD_DELAY:-200} ${KBD_RATE:-50} 2>/dev/null 1>&2
+fi

@@ -1,0 +1,16 @@
+# launch some popular (?) programs
+bind C neww 'exec mc'
+bind P neww 'exec ncmpc'
+bind M neww 'exec sup'
+
+# keys to switch session
+bind q switchc -t0
+bind w switchc -t1
+bind e switchc -t2
+
+# other key bindings
+bind i choose-window
+bind b set-option status
+
+bind , split-window "exec top -s 0.5"
+bind / command-prompt "split-window 'exec man %%'"

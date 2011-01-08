@@ -1,0 +1,2 @@
+# Start xbindkeys.
+pathfind xbindkeys && [ -f ~/.xbindkeysrc ] && xbindkeys

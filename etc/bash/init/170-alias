@@ -1,0 +1,63 @@
+# enable color support of ls and also add handy aliases
+[ -x /usr/bin/dircolors ] && [ -r ~/.dircolors ] && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+
+# Some more ls aliases.
+alias ll='ls -l'
+alias la='ls -A'
+alias lc='ls -CF'
+alias lm='ls -al | less'
+
+# From Ulrich Drepper.
+alias egrep='egrep --color=tty -d skip'
+alias egrpe='egrep --color=tty -d skip'
+alias fgrep='fgrep --color=tty -d skip'
+alias fgrpe='fgrep --color=tty -d skip'
+alias grep='grep --color=tty -d skip'
+alias grpe='grep --color=tty -d skip'
+
+# Grep all processes.
+alias pg='ps aux | grep'
+
+# Pager.
+alias p="$PAGER"
+
+# Always show interpretable results.
+alias du='du -kh'
+alias df='df -kTh'
+
+# Safe versions for some commands.
+alias rm='rm -i'
+#alias cp='cp -i'
+#alias mv='mv -i'
+
+# Quick sudo alias.
+alias ~='sudo'
+
+# Quick cd aliases.
+alias ,='cd'
+alias _='cd -'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias cd..='cd ..'
+alias cd...='cd ../..'
+alias cd-='cd -'
+
+tailf() { tail -f /var/log/"$1"; }
+
+# Debian related.
+alias api='apt-iselect'
+alias apt='sudo apt-get install'
+alias apu='sudo apt-get update'
+alias apk='~sudo /bin/apt-key-add'
+alias apc='apt-cache'
+alias aps='apt-get source'
+
+# Colored manpages.
+if [ -e ~/.terminfo ]; then
+	alias man="TERMINFO=~/.terminfo/ LESS=C TERM=mostlike PAGER=less man"
+fi
+
+# Github.
+if [ -x ~/bin/hub ]; then
+	alias git=hub
+fi

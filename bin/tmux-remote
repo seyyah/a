@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# program name
+PROGNAME=${0##*/}
+
+host=${PROGNAME##*[:@+-.~]}
+
+if [ -n "$TMUX" ]; then
+	tmux renamew "$host"
+	tmux setw window-status-fg cyan >/dev/null
+fi
+
+ssh "$host" "$@"
+
+if [ -n "$TMUX" ]; then
+	tmux setw -u window-status-fg >/dev/null
+	tmux setw -u automatic-rename >/dev/null
+fi

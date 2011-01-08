@@ -1,0 +1,13 @@
+# XXX: This will make tmux a non-login shell.
+set -g default-command bash
+
+setw -g utf8 on
+set -g bell-action none
+set -g history-limit 5000
+set -g display-panes-time 2000
+set -g display-time 2000
+
+# the title might later be referred (e.g. devilspie)
+set -g set-titles on
+set -g set-titles-string "a"
+set -ag update-environment "USER"
