@@ -8,7 +8,7 @@ if [ -n "$XIX_PREF_XEDITOR" ]; then
 	cream)
 		editor="cream -f"
 		;;
-	vim|gvim|nano|emacspico|joe)
+	vim|gvim|nano|emacs|pico|joe)
 		editor="$XIX_PREF_XEDITOR"
 		;;
 	*)
