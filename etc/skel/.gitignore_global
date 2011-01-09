@@ -4,6 +4,9 @@
 # ------------------------------------------------------------------------------
 
 # Except some obvious patterns only spesific patterns should be defined
+# For more project spesific patterns see:
+# - https://github.com/github/gitignore
+# - https://github.com/qurve/gitignore
 
 # ------------------------------------------------------------------------------
 # Generic cruft
