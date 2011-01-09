@@ -4,4 +4,4 @@ source $XIX_ETC/tmux/170-bind
 source $XIX_ETC/tmux/170-status
 source $XIX_ETC/tmux/270-local
 source $XIX_ETC/tmux/970-local
-source $XIX_ETC/tmux/990-end
+source $XIX_ETC/tmux/999-end
