@@ -15,8 +15,9 @@ alias fgrpe='fgrep --color=tty -d skip'
 alias grep='grep --color=tty -d skip'
 alias grpe='grep --color=tty -d skip'
 
-# Grep all processes.
-alias pg='ps aux | grep'
+# Show processes.
+alias px='ps aux'
+alias pg='ps aux | egrep'
 
 # Pager.
 alias p="$PAGER"
@@ -27,15 +28,11 @@ alias df='df -kTh'
 
 # Safe versions for some commands.
 alias rm='rm -i'
-#alias cp='cp -i'
-#alias mv='mv -i'
 
 # Quick sudo alias.
 alias ~='sudo'
 
 # Quick cd aliases.
-alias ,='cd'
-alias _='cd -'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias cd..='cd ..'
@@ -59,5 +56,5 @@ fi
 
 # Github.
 if [ -x ~/bin/hub ]; then
-	alias git=hub
+	alias git=~/bin/hub
 fi

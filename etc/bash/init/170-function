@@ -42,7 +42,7 @@ _i () {
 	$sudo $cmd
 }
 _services_show () {
-        local cur
+	local cur
 
 	COMPREPLY=()
 	cur=${COMP_WORDS[COMP_CWORD]}

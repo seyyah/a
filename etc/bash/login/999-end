@@ -1,0 +1,55 @@
+screen=
+
+case "$XIX_PREF_SCREEN" in
+[Nn][Oo][Nn][Ee])
+	# skip
+	;;
+"")
+	for p in tmux byobu screen; do
+		if [ -x "/usr/bin/$p"; then
+			screen="/usr/bin/$p"
+			break
+		fi
+	done
+	unset p
+	if [ -z "$screen" ]; then
+		echo >&2 "Çalıştırılabilir bir uçbirim çoğullayıcı bulunamadı."
+		echo >&2 "Desteklenen uçbirim çoğullayıcılar: tmux byobu screen."
+	fi
+	;;
+*)
+	if [ -x "$XIX_PREF_SCREEN" ]; then
+		screen="$XIX_PREF_SCREEN"
+	else
+		echo >&2 "Seçilen uçbirim çoğullayıcı $XIX_PREF_SCREEN çalıştırılabilir değil"
+		echo >&2 "XIX_PREF_SCREEN değişkeni mutlak bir dosya yolu olmalı"
+	fi
+	;;
+esac
+
+if [ -z "$screen" ]; then
+	[ -f ~/.bashrc ] && . ~/.bashrc
+	return 0
+fi
+
+TERM="screen"
+if [ -x /usr/bin/tput ] && [ $(/usr/bin/tput colors 2>/dev/null || echo 0) -eq 256 ]; then
+	TERM="screen-256color"
+fi
+export TERM
+
+case "$screen" in
+*/tmux)
+	"$screen" has -t0 2>/dev/null || "$screen" -2 start
+	exec "$screen" -2 attach -d -t0
+;;
+*/byobu)
+	exec "$screen"
+;;
+*/screen)
+	exec "$screen" -T "$TERM"
+;;
+*)
+	exec "$screen"
+;;
+esac

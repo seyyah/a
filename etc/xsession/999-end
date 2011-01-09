@@ -1,0 +1,48 @@
+xterm=
+
+case "$XIX_PREF_XTERMINAL" in
+[Nn][Oo][Nn][Ee])
+	unset xterm
+	return 0
+	;;
+"")
+	for p in xterm rxvt gnome-terminal; do
+		if [ -x "/usr/bin/$p"; then
+			xterm="/usr/bin/$p"
+			break
+		fi
+	done
+	unset p
+	if [ -z "$xterm" ]; then
+		echo >&2 "desteklenenler arasında çalıştırılabilir bir uçbirim bulunamadı"
+		unset xterm
+		return 0
+	fi
+	;;
+*)
+	if [ -x "$XIX_PREF_XTERMINAL" ]; then
+		xterm="$XIX_PREF_XTERMINAL"
+	else
+		echo >&2 "seçilen uçbirim $XIX_PREF_XTERMINAL çalıştırılabilir değil"
+		echo >&2 "XIX_PREF_XTERMINAL değişkeni mutlak bir dosya yolu olmalı"
+		return 0
+	fi
+	;;
+esac
+
+# This might be catched by some programs, e.g. devilspie.  DO NOT USE SPACES!
+title="a"
+case "$xterm" in
+*/xterm|*/rxvt)
+	xterm="$xterm -geometry 80x30 -title $title"
+	;;
+*/gnome-terminal)
+	xterm="$xterm --geometry 80x30 --title $title"
+	;;
+*)
+	# nop
+	;;
+esac
+unset title
+
+exec $xterm -e ${SHELL:-/bin/bash} -l &
