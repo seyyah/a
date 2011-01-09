@@ -1,5 +1,5 @@
 [core]
-	excludesfile = ~/.gitignore_global
+	excludesfile = ~/etc/git/gitignore_global
 [gui]
 	fontui = -family terminus -size 11 -weight normal -slant roman -underline 0 -overstrike 0
 	fontdiff = -family terminus -size 10 -weight normal -slant roman -underline 0 -overstrike 0
