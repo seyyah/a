@@ -2,8 +2,8 @@
 
 if [ -n "$DISPLAY" ]; then
 	[ -x /usr/bin/xset ] && \
-		/usr/bin/xset r rate ${XKB_DELAY:-220} ${XKB_RATE:-80}
+		/usr/bin/xset r rate ${XKB_DELAY:-220} ${XKB_RATE:-80} ||:
 else
 	[ -x /usr/bin/kbdrate ] && \
-		/usr/bin/kbdrate -d ${KBD_DELAY:-200} ${KBD_RATE:-50} 2>/dev/null 1>&2
+		/usr/bin/kbdrate -d ${KBD_DELAY:-200} ${KBD_RATE:-50} 2>/dev/null 1>&2 ||:
 fi
