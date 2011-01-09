@@ -1,6 +1,7 @@
 #!/bin/sh
 
 PROGNAME=${0##*/}
+LOGFILE="$HOME/.xsession-errors"
 
 if ! type xix >/dev/null 2>&1; then
 	for f in /usr/lib/19/xix $HOME/lib/xix; do
@@ -16,5 +17,5 @@ if ! type xix >/dev/null 2>&1; then
 	fi
 fi
 
-safefile "$HOME/.xsession-errors"; exec >>"$file" 2>&1
+safefile "$LOGFILE"; exec >>"$LOGFILE" 2>&1
 sourcedir "${XIX_XSESSION:-$XIX_ETC/xsession}"
