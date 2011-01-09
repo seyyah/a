@@ -7,7 +7,7 @@ case "$XIX_PREF_XTERMINAL" in
 	;;
 "")
 	for p in xterm rxvt gnome-terminal; do
-		if [ -x "/usr/bin/$p"; then
+		if [ -x "/usr/bin/$p" ]; then
 			xterm="/usr/bin/$p"
 			break
 		fi
