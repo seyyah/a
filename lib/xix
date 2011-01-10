@@ -146,12 +146,12 @@ safefile() {
 # ortam değişkenlerini mevcut ortama ithal et
 importenvironment() {
 	export PATH=$XIX_PATH
-	export SHLIB=XIX_SHLIB
-	export RUBYLIB=XIX_RUBYLIB
-	export RAKE_SYSTEM=XIX_RAKE_SYSTEM
-	export PERL5LIB=XIX_PERL5LIB
-	export PYTHONPATH=XIX_PYTHONPATH
-	export PHPRC=XIX_PHPRC
+	export SHLIB=$XIX_SHLIB
+	export RUBYLIB=$XIX_RUBYLIB
+	export RAKE_SYSTEM=$XIX_RAKE_SYSTEM
+	export PERL5LIB=$XIX_PERL5LIB
+	export PYTHONPATH=$XIX_PYTHONPATH
+	export PHPRC=$XIX_PHPRC
 }
 
 # temel işlevleri alt kabuğa ihraç et (bash için)
