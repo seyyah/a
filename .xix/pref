@@ -8,7 +8,7 @@ XIX_PREF_SCREEN=/usr/bin/tmux
 # Dikkat!  "fork" edebilen bir metin düzenleyici kullanmalısınız.  Örneğin
 # gedit, geany, anjuta, netbeans, eclipse kullanılamaz.  Programın mutlak
 # dosya yolunu vermelisiniz, örneğin "nano" değil  "/usr/bin/nano"
-XIX_PREF_XEDITOR=/usr/bin/cream
+XIX_PREF_XEDITOR=/usr/bin/vim
 # Açılışta çalıştırılacak uçbirim.
 # 	boş: kullanma, xterm, rxvt, gnome-terminal
 #  Dikkat!  Programın mutlak dosya yolunu vermelisiniz, örneğin "xterm" değil
@@ -16,4 +16,4 @@ XIX_PREF_XEDITOR=/usr/bin/cream
 XIX_PREF_XTERMINAL=
 # Açılışta çalıştırılan uçbirim tam ekran yapılsın mı?
 #   boş: hayır, yes: evet
-XIX_PREF_FULLSCREEN=
+XIX_PREF_FULLSCREEN=yes
