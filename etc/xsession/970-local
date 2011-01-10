@@ -1,3 +1,0 @@
-if [ -e "$HOME/.xsession.local" ]; then
-	. "$HOME/.xsession.local"
-fi
