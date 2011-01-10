@@ -1,0 +1,3 @@
+if type importenvironment >/dev/null 2>&1; then
+	importenvironment
+fi
