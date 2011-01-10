@@ -22,7 +22,7 @@ case "$XIX_PREF_SCREEN" in
 		screen="$XIX_PREF_SCREEN"
 	else
 		echo >&2 "Seçilen uçbirim çoğullayıcı $XIX_PREF_SCREEN çalıştırılabilir değil"
-		echo >&2 "XIX_PREF_SCREEN değişkeni mutlak bir dosya yolu olmalı"
+		echo >&2 "XIX_PREF_SCREEN değişkeni programın mutlak dosya yolu olmalı"
 	fi
 	;;
 esac
