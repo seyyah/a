@@ -21,7 +21,7 @@ if [ -z "$XIX" ]; then
 	export XIX_CRON="${XIX_ETC}/cron"
 
 	# PATH.  Yönetici kontrolü yapmakla uğraşma.
-	XIX_PATH="$PATH"
+	XIX_PATH="${PATH:=/usr/bin:/bin:/usr/games}"
 	case "$XIX_PATH" in
 	*/sbin:|/sbin:*|*/sbin) ;;
 	*) XIX_PATH="/usr/sbin:/sbin:${XIX_PATH}" ;;
