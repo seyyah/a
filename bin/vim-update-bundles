@@ -24,6 +24,7 @@
 # - do not install a ~/.vim/vimrc (we don't need any)
 # - allow using alternative vim files to put bundle lines (currently
 #   ~/.vim/bundles.vim and ~/.vim/bundle.vim)
+# - rename Trashed-Bundle to simply .bundle
 
 
 require 'fileutils'
@@ -189,7 +190,7 @@ end
 
 
 def remove_bundle dir
-  trash_dir = dotvim("Trashed-Bundles")
+  trash_dir = dotvim(".bundle")
   ensure_dir trash_dir
   1.upto(100) do |i|
     destination = "#{trash_dir}/#{dir}-#{'%02d' % i}"
