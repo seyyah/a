@@ -1,7 +1,15 @@
-# etkileşimsiz şekilde sadece istenen deb paketlerini kur
+# aptitude sarmalayıcı
+apti() {
+	local command
+	command="$1"
+	shift 2>/dev/null ||:
+	sudo aptitude "$command" -f --quiet --assume-yes --without-recommends "$@"
+}
+
+# deb paketlerini etkileşimsiz şekilde apt-get ile kur
 aptinstall() {
 	sudo apt-get install --option APT::Get::HideAutoRemove=1 \
-		--quiet --yes --no-install-recommends --ignore-missing "$@"
+		--quiet --yes --force --no-install-recommends --ignore-missing "$@"
 }
 
 # gem kur (sistem öntanımlısıyla)

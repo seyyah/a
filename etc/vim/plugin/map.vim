@@ -148,11 +148,11 @@ function! s:mapa(letters, leader)
 		execute   'map <silent> <m-' . c . '> ' . a:leader . c . '|' .
 				\ 'imap <silent> <m-' . c . '> ' . a:leader . c
 	endfor
-	if $DISPLAY != "" | return | endif
+	if $DISPLAY != "" || $SSH_CONNECTION != "" | return | endif
 	" Kludge to use Alt key (as Meta) in linux console.
 	" Watch for the side-effects.
 	for c in a:letters
-		execute 'set <m-' . c . '>=' . c
+		silent! execute 'set <m-' . c . '>=' . c
 	endfor
 endfun
 
