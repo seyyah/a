@@ -1,6 +1,6 @@
 # Uçbirim çoğullayıcı.
 # 	none: uçbirim çoğullayıcı kullanma, tmux, byobu, screen
-XIX_PREF_SCREEN=/usr/bintmux
+XIX_PREF_SCREEN=/usr/bin/tmux
 # Grafik ortamda kullanılacak metin düzenleyici.
 #	boş: sistem öntanımlısı, cream, vim, gvim, emacs, nano, pico, joe
 # Dikkat!  "fork" edebilen bir metin düzenleyici kullanmalısınız.  Örneğin
