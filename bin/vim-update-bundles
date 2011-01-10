@@ -165,12 +165,10 @@ end
 
 
 def read_bundle_lines(*args)
-  [
-    *args,
+  [ *args,
     "#{ENV['HOME']}/.vimrc",
     "#{ENV['HOME']}/.vim/bundles.vim",
-    "#{ENV['HOME']}/.vim/bundle.vim"
-  ].each do |path|
+    "#{ENV['HOME']}/.vim/bundle.vim" ].each do |path|
     next unless File.exist? path
     File.open(path) do |file|
       file.each_line { |line| yield line }
