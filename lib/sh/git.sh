@@ -1,31 +1,85 @@
-github_https() {
-	curl -s -F "login=${XIX_GITHUB_USER}" -F "token=${XIX_GITHUB_TOKEN}" "https://github.com/api/v2/yaml/${*}"
+# github api erişimi
+github_api_access() {
+	local args user token url https quiet format command reply
+
+	args=$(getopt "squ:t:f:" $*) || bug "getopt hatası: $*"
+
+	set -- $args
+	while [ $# -ge 0 ]; do
+		case "$1" in
+		-s) https=yes;   shift ;;
+		-q)	quiet=yes;   shift ;;
+		-u) user="$2";   shift; shift ;;
+		-t) token="$2";	 shift; shift ;;
+		-f) format="$2"; shift; shift ;;
+		--) shift; break ;;
+		esac
+	done
+
+	[ $# -eq 1 ] || bug "eksik veya fazla argüman"
+
+	: ${user:="$XIX_GITHUB_USER"}
+	: ${token:="$XIX_GITHUB_TOKEN"}
+	: ${format:='yaml'}
+
+	url=$(printf "$1" "$user")
+
+	if [ -n "$https" ]; then
+		[ -n "$user"  ] || bug "GitHub hesabı verilmeli"
+		[ -n "$token" ] || bug "GitHub token verilmeli"
+		command="curl -s -F 'login=${user}' -F 'token=${token}' https://github.com/api/v2/${format}/${url}"
+	else
+		command="curl -s http://github.com/api/v2/${format}/${url}"
+	fi
+
+	reply=$($command 2>/dev/null)     || return
+	echo "$reply" | egrep -q '^error' && return 1
+	[ -z "$quiet" ]                   || return 0
+
+	echo "$reply"
 }
 
-github_http() {
-	curl -s "http://github.com/api/v2/yaml/${*}"
+# github api için http ve https erişimleri
+github_http()  { github_api_access    "$@"; }
+github_https() { github_api_access -s "$@"; }
+
+# github ssh ile erişilebilir durumda mı?
+is_github_sshable() {
+	# SSH kontrolünü sadece bir kere yapmak için sonucu sakla
+	if [ -z "${IS_SSHABLE+X}" ]; then
+		# SSH agent aktif değilse basitçe gerek şartları kontrol edeceğiz.
+		if [ -z "$(ssh-add -l 2>/dev/null ||:)" ]; then
+			# ~/.ssh dizini yok veya boşsa SSH kullanılamaz.
+			if ! [ -d ~/.ssh ] || [ -r ~/.ssh/id_rsa ] || [ -r ~/.ssh/id_dsa ]; then
+				IS_SSHABLE=no
+			fi
+		fi
+		if [ -z "${IS_SSHABLE+X}" ]; then
+			# Aksi halde daha yorucu ve çirkin bir kontrol gerekiyor.
+			cry "SSH erişimi kontrol ediliyor (SSH parolası istenebilir)..."
+			if ssh -T -o StrictHostKeyChecking=no git@github.com 2>&1 |
+				egrep -q 'successfully authenticated'; then
+				IS_SSHABLE=yes
+			else
+				IS_SSHABLE=no
+			fi
+		fi
+	fi
+
+	case "$IS_SSHABLE" in yes) return 0 ;; no) return 1 ;; esac
 }
 
-yamlfield() {
-	ruby -ryaml -e 'h = YAML.load(STDIN); puts h[h.keys.first]['"$field"']'
-}
-
+# verilen dizin bir git çalışma kopyası mı?
 iswc() {
-	case "$(LC_ALL=C GIT_DIR="$1/.git" /usr/bin/git rev-parse --is-inside-work-tree 2>/dev/null ||:)" in
+	case "$(
+		LC_ALL=C GIT_DIR="$1/.git" /usr/bin/git rev-parse --is-inside-work-tree 2>/dev/null ||:
+	)" in
 	true)  return 0 ;;
 	false) return 1 ;;
 	*)     return 2 ;;
 	esac
 }
 
-githubuserexist() {
-	local user="$1"
-	github_https "user/show/$user" | egrep -q '^\s+:'
-}
-githubrepoexist() {
-	local repo="$1" user="${2:-$XIX_GITHUB_USER}"
-	github_https "repos/show/$user/$repo" | egrep -q '^\s+:'
-}
 isgithubtoken() {
 	local token="$1"
 	[ ${#token} -eq 32 ] || return 1

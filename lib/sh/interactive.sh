@@ -3,36 +3,38 @@ isinteractive() {
 	tty -s 2>/dev/null
 }
 
-# ask user for an input with default value
+# öntanımlı değeri bekleterek kullanıcıdan girdi iste
 ask() {
 	local prompt="$1"
 
 	unset REPLY
 	if [ $# -gt 1 ]; then
 		local default="$2"
-		read -p "$prompt [$default]? " REPLY
+		printf "${HILITE}${prompt} ${NORMAL}[${BRACKET}$default${NORMAL}]? "
+		read REPLY </dev/tty
 		[ -n "$REPLY" ] || REPLY="$default"
 	else
-		read -p "$prompt? " REPLY
+		printf "${HILITE}${prompt}${NORMAL}? "
+		read REPLY </dev/tty
 	fi
 
 	# answer is in REPLY
 }
 
-# ask for yes (evet)/no (hayır) with a default answer
+# öntanımlı cevabı bekleterek kullanıcıya evet/hayır sor
 yesno() {
 	local default prompt answer
 
 	default=${2:-'e'}
 
 	case "$default" in
-	[eEyY]*) prompt="[E/h]" ;;
-	[hHnN]*) prompt="[e/H]" ;;
+	[eEyY]*) prompt="[${BRACKET}E/h${NORMAL}]" ;;
+	[hHnN]*) prompt="[${BRACKET}e/H${NORMAL}]" ;;
 	esac
 
 	while :; do
-		echo -n "$1 $prompt "
-		read answer
+		printf "${HILITE}$1 $prompt ${NORMAL}"
+		read answer </dev/tty
 
 		case "${answer:-$default}" in
 		[eE] | [eE][vV] | [eE][vV][eE] | [eE][vV][eE][tT] | \
@@ -44,7 +46,7 @@ yesno() {
 			return 1
 			;;
 		*)
-			echo "Lütfen '[e]vet' veya '[h]ayır' girin"
+			printf "${BAD}Lütfen '[e]vet' veya '[h]ayır' girin${NORMAL}\n"
 			;;
 		esac
 	done

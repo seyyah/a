@@ -2,17 +2,58 @@
 # Copyright ©, 2010 roktas
 # Licensed under WTFPL http://sam.zoy.org/wtfpl/
 
+# renkli ileti ortamını sıfırla
+unsetcolors() {
+	COLS=80
+
+	GOOD=
+	WARN=
+	BAD=
+	NORMAL=
+	HILITE=
+	BRACKET=
+}
+
+# renkli iletileri ve uçbirim genişliğini hazırla
+setcolors() {
+	COLS=${COLUMNS:-0}
+
+	[ $COLS -eq 0 ] && COLS=$(set -- $(stty size </dev/tty 2>/dev/null); echo ${2:-0}) ||:
+	[ $COLS -gt 0 ] || COLS=80
+
+	if [ -n "${COLORMAP}" ] ; then
+		eval ${COLORMAP}
+	else
+		GOOD='\033[32;01m'
+		WARN='\033[33;01m'
+		BAD='\033[31;01m'
+		HILITE='\033[36;01m'
+		BRACKET='\033[34;01m'
+	fi
+	NORMAL='\033[0m'
+}
+
+# renkli iletiler kullanılsın mı?
+case "${NOCOLOR:-false}" in
+yes|true)
+	unsetcolors
+	;;
+no|false)
+	setcolors
+	;;
+esac
+
 # iletiyi stderr'de görüntüle
 message() {
-	echo "$*" | fold -s -w ${COLUMNS:-80} >&2
+	printf "$*\n" | fold -s -w ${COLS:-80} >&2
 }
 
 # iletiyi satır sonu olmadan stderr'de görüntüle
 messagen() {
-	echo -n "$*" | fold -s -w ${COLUMNS:-80} >&2
+	printf "$*" | fold -s -w ${COLS:-80} >&2
 }
 
-# iletilerde kaynak isteniyorsa ekle
+# iletilerde ileti kaynağı isteniyorsa ekle
 if [ -n "$ERROR_MESSAGE_DOMAIN" ]; then
 	message_ () {
 		message "${ERROR_MESSAGE_DOMAIN}: $*"
@@ -25,12 +66,12 @@ fi
 
 # uyarı iletisi
 cry() {
-	message_ "$*"
+	message_ "${WARN}${*}${NORMAL}"
 }
 
 # hata iletisi
 die() {
-	message_ "$*"
+	message_ "${BAD}${*}${NORMAL}"
 	exit 19
 }
 
@@ -41,19 +82,27 @@ else
 	verbose() { :; }
 fi
 
-# öngörülemeyen yazılım hatası
+# öngörülemeyen yazılım hatası iletisi
 bug() {
 	message_ "$@"
 	cry "Bu bir yazılım hatası, lütfen raporlayın."
 	exit 70
 }
 
+# renkli bir ileti
+say() {
+	message_ "${GOOD}${*}${NORMAL}"
+}
+
+# eksik deb paketleri
 missingdeb() {
 	pathfind dpkg-query || bug "dpkg yok; bu bir Debian türevi mi?"
 
-	local pkg missing=
+	local pkg missing
+
+	missing=
 	for pkg; do
-		if ! dpkg-query -W "$pkg" >/dev/null 2>&1; then
+		if ! dpkg-query -s "$pkg" >/dev/null 2>&1; then
 			missing="$missing $pkg"
 		fi
 	done
@@ -87,7 +136,8 @@ ensuregem() {
 # sudo gerektiren işlemlerin öncesinde sudo parolası zaman aşımını tazele
 sudostart() {
 	if [ $(id -u) -ne 0 ]; then
-		local prompt=${*:-'Yönetici hakları gerekiyor.  Lütfen "%u" için parola girin: '}
+		say "Yönetici hakkı gerekecek; sudo parolası sorulabilir."
+		local prompt=${*:-'Lütfen "%u" için parola girin: '}
 		if ! sudo -v -p "$prompt"; then
 			die "Parolayı hatalı giriyorsunuz veya yönetici olma yetkiniz yok!"
 		fi
@@ -112,7 +162,7 @@ isprivileged() {
 	return 1
 }
 
-# geçici dizin oluştur
+# güvenli geçici dizin oluştur
 usetempdir() {
 	local tempname="$1" keeptemp="$2"
 
@@ -142,10 +192,3 @@ has() {
 	case " $* " in *" $first "*) return 0 ;; esac
 	return 1
 }
-
-# işlevleri alt kabuğa ihraç et (bash için)
-if [ -n "$BASH" ]; then
-	export -f message messagen die cry verbose bug \
-			  missingdeb missinggem ensuredeb ensuregem \
-			  sudostart isprivileged usetempdir has
-fi
