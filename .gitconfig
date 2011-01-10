@@ -1,0 +1,31 @@
+[core]
+	excludesfile = ~/etc/git/gitignore_global
+[gui]
+	fontui   = -family terminus -size 11 -weight normal -slant roman -underline 0 -overstrike 0
+	fontdiff = -family terminus -size 10 -weight normal -slant roman -underline 0 -overstrike 0
+[alias]
+	br=branch
+	ci=commit
+	co=checkout
+	di=diff
+	loa=log --graph --decorate --pretty=oneline --abbrev-commit --all
+	lo=log --graph --decorate --pretty=oneline --abbrev-commit
+	me=merge
+	pl=pull
+	pu=push
+	st=status
+	up=pull
+[color]
+	ui = auto
+	branch = auto
+	diff = auto
+	interactive = auto
+	status = auto
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+[user]
+	name = nurettin senyer
+	email = nurettin.senyer@bil.omu.edu.tr
+[github]
+	user = seyyah

@@ -1,0 +1,19 @@
+# Uçbirim çoğullayıcı.  Öntanımlı boş.
+# 	boş (otomatik), none (kullanma), tmux, byobu, screen
+#  Dikkat!  Programın mutlak dosya yolunu vermelisiniz, örneğin "byobu" değil
+#  "/usr/bin/byobu"
+XIX_PREF_SCREEN=/usr/bin/tmux
+# Grafik ortamda kullanılacak metin düzenleyici.  Öntanımlı boş.
+#	boş: sistem öntanımlısı, cream, vim, gvim, emacs, nano, pico, joe
+# Dikkat!  "fork" edebilen bir metin düzenleyici kullanmalısınız.  Örneğin
+# gedit, geany, anjuta, netbeans, eclipse kullanılamaz.  Programın mutlak
+# dosya yolunu vermelisiniz, örneğin "nano" değil  "/usr/bin/nano"
+XIX_PREF_XEDITOR=/usr/bin/cream
+# Açılışta çalıştırılacak uçbirim.
+# 	boş: kullanma, xterm, rxvt, gnome-terminal
+#  Dikkat!  Programın mutlak dosya yolunu vermelisiniz, örneğin "xterm" değil
+#  "/usr/bin/xterm"
+XIX_PREF_XTERMINAL=
+# Açılışta çalıştırılan uçbirim tam ekran yapılsın mı?
+#   boş: hayır, yes: evet
+XIX_PREF_FULLSCREEN=

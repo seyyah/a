@@ -1,0 +1,8 @@
+(if (is (application_name) "Firefox")
+  (set_workspace 2))
+(if (is (application_name) "Iceweasel")
+  (set_workspace 2))
+(if (is (application_name) "xawtv")
+  (set_workspace 2))
+(if (is (window_name) "a")
+  (begin fullscreen (set_workspace 1)))
